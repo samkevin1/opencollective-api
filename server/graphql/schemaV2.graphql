@@ -7481,6 +7481,12 @@ type Collective implements Account & AccountWithHost & AccountWithContributions 
   hostFeePercent(paymentMethodService: PaymentMethodService, paymentMethodType: PaymentMethodType): Float
 
   """
+  Displayed fees percentage that the host takes for this collective
+  """
+
+  hostFeePercentDisplayed: Boolean
+
+  """
   How much platform fees are charged for this account
   """
   platformFeePercent: Float!

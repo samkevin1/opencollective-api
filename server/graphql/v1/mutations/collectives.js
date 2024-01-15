@@ -394,6 +394,15 @@ export function editCollective(_, args, req) {
         }
       })
       .then(() => {
+        // If we try to change the `hostFeePercentDisplayed`
+        if (
+          newCollectiveData.hostFeePercentDisplayed !== undefined &&
+          newCollectiveData.hostFeePercentDisplayed !== collective.hostFeePercentDisplayed
+        ) {
+          return collective.updateHostFeeDisplayed(newCollectiveData.hostFeePercentDisplayed, req.remoteUser);
+        }
+      })
+      .then(() => {
         // if we try to change the `currency`
         if (newCollectiveData.currency !== undefined && newCollectiveData.currency !== collective.currency) {
           return collective.updateCurrency(newCollectiveData.currency, req.remoteUser);

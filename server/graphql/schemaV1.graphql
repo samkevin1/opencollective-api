@@ -25,6 +25,7 @@ interface CollectiveInterface {
   endsAt: DateString
   timezone: String
   hostFeePercent: Float
+  hostFeePercentDisplayed: Boolean
   platformFeePercent: Float
   currency: String
   image: String
@@ -2127,6 +2128,7 @@ type Collective implements CollectiveInterface {
   endsAt: DateString
   timezone: String
   hostFeePercent: Float
+  hostFeePercentDisplayed: Boolean
   platformFeePercent: Float
   currency: String
   image: String
@@ -2391,6 +2393,7 @@ type Event implements CollectiveInterface {
   endsAt: DateString
   timezone: String
   hostFeePercent: Float
+  hostFeePercentDisplayed: Boolean
   platformFeePercent: Float
   currency: String
   image: String
@@ -2655,6 +2658,7 @@ type Fund implements CollectiveInterface {
   endsAt: DateString
   timezone: String
   hostFeePercent: Float
+  hostFeePercentDisplayed: Boolean
   platformFeePercent: Float
   currency: String
   image: String
@@ -2919,6 +2923,7 @@ type Organization implements CollectiveInterface {
   endsAt: DateString
   timezone: String
   hostFeePercent: Float
+  hostFeePercentDisplayed: Boolean
   platformFeePercent: Float
   currency: String
   image: String
@@ -3183,6 +3188,7 @@ type Project implements CollectiveInterface {
   endsAt: DateString
   timezone: String
   hostFeePercent: Float
+  hostFeePercentDisplayed: Boolean
   platformFeePercent: Float
   currency: String
   image: String
@@ -4730,6 +4736,7 @@ input CollectiveInputType {
   notifications: [NotificationInputType]
   HostCollectiveId: Int
   hostFeePercent: Float
+  hostFeePercentDisplayed: Boolean
   ParentCollectiveId: Int
   email: String
   isIncognito: Boolean

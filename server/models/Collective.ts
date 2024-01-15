@@ -257,6 +257,7 @@ class Collective extends Model<
   public declare HostCollectiveId: number;
 
   public declare hostFeePercent: number;
+  public declare hostFeePercentDisplayed: boolean;
   public declare platformFeePercent: number;
   public declare description: string;
   public declare longDescription: string;
@@ -414,6 +415,7 @@ class Collective extends Model<
   }
 
   get info() {
+    console.log('get this thing');
     return {
       id: this.id,
       name: this.name,
@@ -442,6 +444,7 @@ class Collective extends Model<
       repositoryUrl: this.repositoryUrl,
       publicUrl: this.publicUrl,
       hostFeePercent: this.hostFeePercent,
+      hostFeePercentDisplayed: this.hostFeePercentDisplayed,
       platformFeePercent: this.platformFeePercent,
       tags: this.tags,
       HostCollectiveId: this.HostCollectiveId,
@@ -2020,6 +2023,53 @@ class Collective extends Model<
     return this;
   };
 
+  updateHostFeeDisplayed = async function (hostFeePercentDisplayed, remoteUser) {
+    if (
+      typeof hostFeePercentDisplayed === 'undefined' ||
+      !remoteUser ||
+      hostFeePercentDisplayed === this.hostFeePercentDisplayed
+    ) {
+      return;
+    }
+    if (
+      [CollectiveType.COLLECTIVE, CollectiveType.EVENT, CollectiveType.FUND, CollectiveType.PROJECT].includes(this.type)
+    ) {
+      // only an admin of the host of the collective can edit `hostFeePercentDisplayed` of a COLLECTIVE
+      if (!remoteUser || !remoteUser.isAdmin(this.HostCollectiveId)) {
+        throw new Error(
+          'Only an admin of the host collective can edit the display of the host fee for this collective',
+        );
+      }
+
+      return this.update({ hostFeePercentDisplayed });
+    } else {
+      const isHost = await this.isHost();
+      if (isHost) {
+        if (!remoteUser.isAdmin(this.id)) {
+          throw new Error('You must be an admin of this host to change the host fee');
+        }
+
+        await models.Collective.update(
+          { hostFeePercentDisplayed },
+          {
+            hooks: false,
+            where: {
+              HostCollectiveId: this.id,
+              approvedAt: { [Op.not]: null },
+              data: {
+                useCustomHostFee: { [Op.not]: true },
+              },
+            },
+          },
+        );
+
+        // Update host
+        return this.update({ hostFeePercentDisplayed });
+      }
+    }
+    return this;
+  };
+
   updatePlatformFee = async function (platformFeePercent, remoteUser) {
     if (typeof platformFeePercent === 'undefined' || !remoteUser || platformFeePercent === this.platformFeePercent) {
       return;
@@ -3518,6 +3568,11 @@ Collective.init(
         min: 0,
         max: 100,
       },
+    },
+
+    hostFeePercentDisplayed: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
     },
 
     platformFeePercent: {
